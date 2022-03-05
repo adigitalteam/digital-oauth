@@ -1,0 +1,19 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      # Setup key
+      - run: set -eu
+      - run: mkdir "$HOME/.ssh"
+      - run: echo "${{ secrets.sshkey1 }}" > "$HOME/.ssh/sshkey1"
+      - run: chmod 600 "$HOME/.ssh/sshkey1"
+      # Deploy
+      - run: rsync -e "ssh -p 20022 -i $HOME/.ssh/sshkey1 -o StrictHostKeyChecking=no" --archive --compress --delete . root@89.108.64.123:/var/www/html
